@@ -9,7 +9,7 @@ import (
 	"github.com/btcsuite/websocket"
 )
 
-var ArgAddr = flag.String("addr", "localhost:8080", "http service address")
+var ArgAddr = flag.String("addr", "0.0.0.0:8080", "http service address")
 
 func main() {
 	flag.Parse()

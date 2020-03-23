@@ -1,0 +1,22 @@
+---
+kind: pipeline
+name: default
+
+services:
+steps:
+  - name: Build container
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: quay_username
+      password:
+        from_secret: quay_password
+      repo: quay.io/openware/ws-debug
+      registry: quay.io
+    when:
+      branch:
+        - master
+
+trigger:
+  event:
+    - push

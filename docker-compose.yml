@@ -1,0 +1,31 @@
+version: "3.6"
+
+services:
+  ws-debug:
+    image: quay.io/openware/ws-debug:0.0.3
+    labels:
+      traefik.enable: true
+      traefik.frontend.rule: "Host:www.app.local"
+      traefik.frontend.passHostHeader: "true"
+      traefik.default.port: 8080
+      traefik.default.protocol: http
+      traefik.ws.frontend.rule: "Host:www.app.local"
+      traefik.ws.protocol: ws
+      traefik.ws.port: 8080
+
+  whoami:
+    image: "containous/whoami"
+    container_name: "simple-service"
+    labels:
+      traefik.enable: true
+      traefik.frontend.rule: "Host:whoami.app.local"
+      traefik.frontend.passHostHeader: "true"
+
+  traefik:
+    image: traefik:1.7.22
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/traefik.toml:/etc/traefik/traefik.toml:ro

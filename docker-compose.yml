@@ -1,31 +1,31 @@
 version: "3.6"
 
 services:
-  ws-debug:
+  wsdebug:
     image: quay.io/openware/ws-debug:0.0.3
     labels:
-      traefik.enable: true
-      traefik.frontend.rule: "Host:www.app.local"
-      traefik.frontend.passHostHeader: "true"
-      traefik.default.port: 8080
-      traefik.default.protocol: http
-      traefik.ws.frontend.rule: "Host:www.app.local"
-      traefik.ws.protocol: ws
-      traefik.ws.port: 8080
+      - "traefik.http.routers.wsdebug.rule=Host(`www.app.local`)"
+      - "traefik.http.routers.wsdebug.entrypoints=web"
+      - "traefik.http.services.wsdebug.loadbalancer.server.port=8080"
+      - "traefik.enable=true"
 
   whoami:
     image: "containous/whoami"
-    container_name: "simple-service"
     labels:
-      traefik.enable: true
-      traefik.frontend.rule: "Host:whoami.app.local"
-      traefik.frontend.passHostHeader: "true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.app.local`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.enable=true"
 
   traefik:
-    image: traefik:1.7.22
+    image: traefik:2.1.8
     ports:
       - "80:80"
       - "8080:8080"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/traefik.toml:/etc/traefik/traefik.toml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro

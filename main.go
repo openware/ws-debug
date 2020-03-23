@@ -48,14 +48,19 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if string(msg) != "" {
-			log.Printf("recv: %s", msg)
-			log.Printf(fmt.Sprintf("X-Forwarded-For: %s", r.Header.Get("X-Forwarded-For")))
-
-			err = c.WriteMessage(mt, []byte(fmt.Sprintf("X-Forwarded-For: %s", r.Header.Get("X-Forwarded-For"))))
+			log.Printf("Received: %s", msg)
 			err = c.WriteMessage(mt, []byte(fmt.Sprintf("pong: %s", msg)))
-			if err != nil {
-				log.Println("Error sending message: ", err.Error())
+
+			for k, values := range r.Header {
+				for _, v := range values {
+					log.Printf("%s: %s", k, v)
+					err = c.WriteMessage(mt, []byte(fmt.Sprintf("%s: %s", k, v)))
+					if err != nil {
+						log.Println("Error sending message: ", err.Error())
+					}
+				}
 			}
+
 		}
 	}
 }
